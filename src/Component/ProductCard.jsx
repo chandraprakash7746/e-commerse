@@ -5,6 +5,7 @@ import { ThemeContext } from "../Store/ThemeProvider";
 import Wishlist from "../Icons/Wishlist";
 import UseIsProductInWishlist from "../CustomHooks/UseIsProductInWishlist";
 import UseWishlistProduct from "../CustomHooks/UseWishlistProduct";
+import ProductRemvePopup from "./ProductRemvePopup";
 
 
 const ProductCard = ({ data }) => {
@@ -42,6 +43,9 @@ const ProductCard = ({ data }) => {
                 <div className="cursor-pointer p-0.5 hover:bg-blue-700 bg-blue-500 text-amber-100 font-semibold rounded-md border-pink-600 w-30 text-center">Add to Cart</div>
             </div>
         </div>
+
+
+        
 
     </Link>)
 }

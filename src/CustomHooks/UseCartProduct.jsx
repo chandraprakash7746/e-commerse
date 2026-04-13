@@ -8,7 +8,7 @@ const UseCartProduct = (productData) => {
     const isCartProduct = UseIsProductInCrt(id);
     const dispatch = useDispatch();
 
-    function handleCart(){
+    function handleCart(){ 
         if(isCartProduct){
             dispatch(removeFromCart(id));
         }else{

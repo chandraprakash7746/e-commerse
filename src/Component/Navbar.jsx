@@ -6,10 +6,11 @@ import SearchBar from "./SearchBar";
 import { ThemeContext } from "../Store/ThemeProvider";
 import { useContext } from "react";
 import { Link } from "react-router-dom";
+import UseWishlistAndCartCount from "../CustomHooks/UseWishlistAndCartCount";
 
-
+ 
 const Navbar = ({ hideSearchBar = false }) => {
-
+    const { cartDataCount, wishlistCount } = UseWishlistAndCartCount();
     const { theme, setTheme } = useContext(ThemeContext);
     const dark = "bg-black";
     const light = "bg-blue-400";
@@ -29,8 +30,16 @@ const Navbar = ({ hideSearchBar = false }) => {
 
 
                 <div className="flex justify-around  w-[20%]  text-base text-white font-sans">
-                    <Link to={`/wishlist`} className=" w-[50%] flex gap-1 cursor-pointer"><Wishlist width="25px" />Wishlist</Link>
-                    <Link to={'/cart'} className=" w-[50%] flex gap-1 cursor-pointer"><Cart width="25px" /> Cart</Link>
+                    <Link to={`/wishlist`} className=" w-[50%] flex gap-1 cursor-pointer border relative"><Wishlist width="25px" />
+                        <div>
+                            Wishlist
+                        </div>
+                        {wishlistCount > 0 && <div className="absolute right-10 bottom-2 text-black">{wishlistCount }</div>}
+                    </Link>
+                    <Link to={'/cart'} className=" w-[50%] flex gap-1 cursor-pointer relative"><Cart width="25px" /> 
+                    <div>Cart</div>
+                   {cartDataCount > 0 &&  <div className="text-black absolute right-10 bottom-2">{cartDataCount}</div>}
+                    </Link>
                 </div>
 
                 <label className={`toggle text-base-content ${theme === "light" ? "bg-yellow-100" : "bg-gray-700"}`}>

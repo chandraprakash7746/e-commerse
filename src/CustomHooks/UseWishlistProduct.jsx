@@ -7,13 +7,13 @@ const UseWishlistProduct = (productData) => {
 
     const dispatch = useDispatch();
     const isProductInWishlist = UseIsProductInWishlist(id);
-
+ 
     function handleWishlist(){
         if(isProductInWishlist){
             dispatch(removeFromWishlist(id));
         }else{
             dispatch(addToWishlist(productData));
-        }
+        } 
     }
 
     return{handleWishlist, isProductInWishlist}

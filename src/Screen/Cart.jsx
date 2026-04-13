@@ -2,8 +2,11 @@ import { useDispatch, useSelector } from "react-redux";
 import Navbar from "../Component/Navbar";
 import { addToCart, removeFromCart, decreaseQuantityOfCart } from "../app/ProductSlice";
 import { Link } from "react-router-dom";
+import { useMemo, useState } from "react";
+import ProductRemvePopup from "../Component/ProductRemvePopup";
 
 const Cart = () => {
+    const [showModal, setShowModal] = useState(false)
     const dispatch = useDispatch();
     const cartData = useSelector((state) => state.product.cartMap)
     console.log("Cart dta ", cartData);
@@ -12,12 +15,20 @@ const Cart = () => {
 
     const data = Object.values(cartDataArr)
 
-    const subtotal = cartDataArr.reduce((acc, item) => {
-        return (acc + (item.data.price * item.quantity));
-    }, 0);
+
+    // const subtotal = cartDataArr.reduce((acc, item) => {
+    //     return (acc + (item.data.price * item.quantity));
+    // }, 0);
+
+    const subtotal = useMemo(() => {
+        return cartDataArr.reduce((acc, item) => {
+            return (acc + (item.data.price * item.quantity));
+        }, 0);
+    }, [cartDataArr])
+     
 
     return (
-        <div className="w-full h-full bg-gray-100">
+        <div className="w-full h-screen bg-gray-100 relative">
             <Navbar />
             <div className=" w-[80%] m-auto">
                 <div>
@@ -30,10 +41,15 @@ const Cart = () => {
                                 const data = item.data; // product data
                                 return (
                                     <div className="p-3 w-full ">
-                                        <div className="flex gap-3">
-                                            <div className=" w-25 h-25">
+                                        <div className=" flex flex-col sm:flex-row items-center gap-6 bg-white p-5 rounded-xl shadow-sm border border-gray-100">
+                                            <ProductRemvePopup 
+                                             showModal = {showModal}
+                                             setShowModal = {setShowModal}
+                                             productData = {data}
+                                            />
+                                            <Link to={`/products/${data.id}`} className=" w-25 h-25">
                                                 <img src={data.thumbnail} alt="" />
-                                            </div>
+                                            </Link>
                                             <div className="w-full">
                                                 <div className="flex justify-between w-full">
                                                     <div>
@@ -44,26 +60,29 @@ const Cart = () => {
                                                 </div>
                                                 <div className="border w-[50%] flex mt-2.5">
                                                     <div className=" w-[40%] flex border border-sky-100 rounded-lg m-2 p-1  bg-slate-200">
-                                                        <p onClick={()=> dispatch(decreaseQuantityOfCart(data.id))}
-                                                         className=" font-bold   flex-1 cursor-pointer">-</p>
+                                                        <p onClick={() => dispatch(decreaseQuantityOfCart(data.id))}
+                                                            className=" font-bold   flex-1 cursor-pointer">-</p>
                                                         <p className=" font-bold   flex-1 ">{item.quantity}</p>
                                                         <p onClick={() => dispatch(addToCart(data))}
-                                                         className=" font-bold  flex-1 cursor-pointer">+</p>
+                                                            className=" font-bold  flex-1 cursor-pointer">+</p>
                                                     </div>
                                                     <div className=" w-[50%] m-auto pl-2.5 text-red-500">
-                                                        <button onClick={()=> dispatch(removeFromCart(data.id))}
-                                                         className=" w-full cursor-pointer font-semibold">Remove</button>
+                                                        {<button 
+                                                        onClick={() => {
+                                                            // dispatch(removeFromCart(data.id))
+                                                            setShowModal(!showModal)
+                                                        }}
+                                                            className=" w-full cursor-pointer font-semibold">Remove</button>}
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
-                                      
                                     </div>
                                 )
                             })}
                         </div>
 
-                        <div className="border border-fuchsia-800 w-[30%]">
+                        <div className="border border-fuchsia-800 w-[30%] h-50">
                             <div><h1>Order Summary</h1></div>
 
                             <div><span>Subtotal</span><span>{subtotal}</span></div>
@@ -78,22 +97,25 @@ const Cart = () => {
                         </div>
                     </div>
                 ) : (
-                     <div className="flex flex-col items-center justify-center py-16 bg-white rounded-xl shadow-sm border border-gray-200">
-                            <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mb-4">
-                                <svg className="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                                </svg>
-                            </div>
-                            <h2 className="text-xl font-medium text-gray-900">Your cart is empty</h2>
-                            <p className="text-gray-500 mt-2 mb-6 text-center">Looks like you haven't added anything to your cart yet.</p>
-                            <Link to={"/"} className="bg-indigo-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-indigo-700 transition-colors">
-                                Start Shopping
-                            </Link>
+                    <div className="flex flex-col items-center justify-center py-16 bg-white rounded-xl shadow-sm border border-gray-200">
+                        <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+                            <svg className="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                            </svg>
                         </div>
+                        <h2 className="text-xl font-medium text-gray-900">Your cart is empty</h2>
+                        <p className="text-gray-500 mt-2 mb-6 text-center">Looks like you haven't added anything to your cart yet.</p>
+                        <Link to={"/"} className="bg-indigo-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-indigo-700 transition-colors">
+                            Start Shopping
+                        </Link>
+                    </div>
                 )}
             </div>
+           
         </div>
     )
 }
 
 export default Cart;
+
+

@@ -6,6 +6,13 @@ const initialState = {
     categoryMap: {},
     wishlistData: {},
     cartMap: {},
+     
+    // initially hamara productDataMap kuch yesa dikhega -
+    // productDataMap: {
+    //     "1": { id: 1, title: "iPhone", ... },
+    //     "5": { id: 5, title: "Laptop", ... }
+    // }
+
     // categoryMap{
     //     grocery : [{}{}],
     //     furniture : [......],
@@ -58,7 +65,7 @@ export const productSlice = createSlice({
             if (isProductInCart) {
                 // state.cartMap?.[id]?.quantity =+ 1;
                 state.cartMap[id].quantity += 1;
-            } else {
+            } else { 
                 state.cartMap[productData.id] = {
                     data: productData,
                     quantity: 1,

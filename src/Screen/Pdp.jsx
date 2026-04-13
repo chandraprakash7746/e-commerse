@@ -3,67 +3,32 @@ import Navbar from "../Component/Navbar";
 import { useParams } from "react-router-dom";
 import PdpSkeleton from "../Component/PdpSkeleton";
 import ProductReviews from "../Component/ProductReviews";
-
 import UseGetProductById from "../CustomHooks/UseGetProductByid";
 import UseWishlistProduct from "../CustomHooks/UseWishlistProduct";
 import UseCartProduct from "../CustomHooks/UseCartProduct";
 import { Link } from "react-router-dom";
-
-
-// import { useSelector, useDispatch } from "react-redux";
-// import { addProductDataById } from '../app/ProductSlice'
+import Share from "../Icons/Share";
+import Copy from "../Icons/Copy";
+import {
+  LinkedinShareButton, LinkedinIcon,
+  WhatsappIcon, WhatsappShareButton, EmailIcon, EmailShareButton
+} from "react-share";
+import useProductCategory from "../CustomHooks/UseProductCategory";
+import ProdctCard from '../Component/ProductCard'
 
 const Pdp = () => {
 
-  // const productDataMap = useSelector((state) => state.product.productDataMap)
-  // const dispatch = useDispatch();
-  // console.log("allProductData", productDataMap)
+
 
   const { id } = useParams();
   const { productData, loading, error } = UseGetProductById(id);
   const { handleWishlist, isProductInWishlist } = UseWishlistProduct(productData);
   const { isCartProduct, handleCart } = UseCartProduct(productData);
-  // const [productData, setProductData] = useState(null);
-  // const [loading, setLoading] = useState(true);
-  // const [error, setError] = useState(null);
   const [selectedImage, setSelectedImage] = useState(null);
-
-  // async function getData() {
-  //   try {
-  //     console.log("Api call for product id ", id);
-  //     let apiData = await fetch(`https://dummyjson.com/products/${id}`);
-  //     console.log("Api call for id ", id);
-  //     let jsonData = await apiData.json();
-  //     setProductData(jsonData);
-
-  //     // dispatch(addProductDataById(jsonData))  // saving the data in redux store
-  //     dispatch(addProductDataById([jsonData]))
-
-  //     setSelectedImage(jsonData.thumbnail);
-  //   } catch (err) {
-  //     setError("Something went wrong!");
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // }
-
-  // useEffect(() => {
-  //   if (id) {
-  //     const cacheData = productDataMap[id];
-
-  //     if (cacheData) {
-  //       setLoading(false);
-  //       setProductData(cacheData)
-  //       setSelectedImage(cacheData.thumbnail);
-  //     } else {
-  //       getData();
-  //     }
-
-  //   } else {
-  //     setError("Product Id not found");
-  //     setLoading(false);
-  //   }
-  // }, [id]);
+  const [copied, setCopied] = useState(false);
+   console.log("ProductData => ",productData)
+  const { productData: categoryData } = useProductCategory(productData?.category);
+  console.log("Category data => ", categoryData)
 
   useEffect(() => {
     if (!loading && productData.thumbnail) {
@@ -78,7 +43,25 @@ const Pdp = () => {
       (productData.price * productData.discountPercentage) / 100
     ).toFixed(2);
 
+    const shareURL = `http://localhost:5173/products/${id}`
 
+  const handleCopy = async () => {
+    try {
+    
+      await navigator.clipboard.writeText(shareURL);
+      setCopied(true);
+      
+      setTimeout(() => {
+        setCopied(false);
+      }, 2000);
+      
+      console.log("Link copied to clipboard!");
+    } catch (err) {
+      console.error("Failed to copy!", err);
+    }
+  };
+
+  
 
   return (
     <>
@@ -97,12 +80,43 @@ const Pdp = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
             {/* Image Section */}
             <div>
-              <div className="border rounded-xl p-4 bg-white shadow">
+              <div className="border rounded-xl p-4 bg-white shadow relative">
                 <img
                   src={selectedImage}
                   alt={productData.title}
                   className="w-full h-96 object-contain"
                 />
+                <div onClick={handleCopy} className="absolute top-0 right-1.5 mt-1 ">
+                  <Copy />
+                  {
+                    copied && <span>Copied</span>
+                  }
+
+                  {/* <EmailShareButton
+                    subject="Take a look"
+                    body="Thought you might like this:"
+                    url={shareURL}
+                    aria-label="Share by email"
+                  >
+                    <EmailIcon size={32} round />
+                  </EmailShareButton>
+
+                  <LinkedinShareButton
+                    title="Read this next"
+                    summary="Quick summary"
+                    source="example.com"
+                    url={shareURL}
+                    aria-label="Share on LinkedIn"
+                  >
+                    <LinkedinIcon size={32} round />
+                  </LinkedinShareButton>
+
+                  <WhatsappShareButton title="Read this next" url={shareURL} aria-label="Share on WhatsApp">
+                    <WhatsappIcon size={32} round />
+                  </WhatsappShareButton> */}
+
+
+                </div>
               </div>
 
               <div className="flex gap-4 mt-4">
@@ -163,7 +177,10 @@ const Pdp = () => {
                         Add to Cart
                       </button>
                     )
+
                 }
+
+                
 
 
                 <button
@@ -183,6 +200,24 @@ const Pdp = () => {
 
           {/* Reviews Section */}
           <ProductReviews reviews={productData.reviews} />
+
+          <div className=" mt-2.5">
+            <h1 className="font-bold text-4xl pb-2">Related Data</h1>
+            <div className="grid md:grid-cols-3 sm:grid-cols-1 gap-2.5">
+              {/* BUG 1. During the show related items and some changes on UseProductCategory also
+               { 
+              categoryData.map((obj) => {
+                return <ProdctCard key={obj.id} data = {obj} />
+              })
+            } */}
+            {/* Fix Bug */}
+            { categoryData && categoryData.length > 0 ? (
+              categoryData.map((obj) => {
+                return <ProdctCard key={obj.id} data = {obj} />
+              })) : <p>Loading related products.....</p>
+            }
+            </div>
+          </div>
 
         </div>
       )}

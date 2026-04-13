@@ -13,7 +13,7 @@ const ProductCategory = () => {
   // const [loading, setLoading] = useState(true);
   // const { url: category } = useParams(); // used alias (for a diffrent name of Url as category )
 
-  // async function getData() {
+  // async function getData() { 
   //   try {
   //     let apiData = await fetch(
   //       `https://dummyjson.com/products/category/${category}`,
